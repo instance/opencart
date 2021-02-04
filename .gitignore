@@ -26,6 +26,10 @@
 /upload/system/storage/download/*
 !/upload/system/storage/download/index.html
 
+# Session Files
+/upload/system/storage/session/*
+!/upload/system/storage/session/index.html
+
 # Upload Files
 /upload/system/storage/upload/*
 !/upload/system/storage/upload/index.html
@@ -45,6 +49,7 @@
 # Ignore all vendor files included by composer and the lock file
 /tests/phpunit/vendor/*
 /tests/phpunit/composer.lock
+/vendor/*
 
 # Test Config File
 /tests/phpunit/bootstrap.php

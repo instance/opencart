@@ -20,16 +20,6 @@ class ControllerAccountPassword extends Controller {
 
 			$this->session->data['success'] = $this->language->get('text_success');
 
-			// Add to activity log
-			$this->load->model('account/activity');
-
-			$activity_data = array(
-				'customer_id' => $this->customer->getId(),
-				'name'        => $this->customer->getFirstName() . ' ' . $this->customer->getLastName()
-			);
-
-			$this->model_account_activity->addActivity('password', $activity_data);
-
 			$this->response->redirect($this->url->link('account/account', '', true));
 		}
 
@@ -49,16 +39,6 @@ class ControllerAccountPassword extends Controller {
 			'text' => $this->language->get('heading_title'),
 			'href' => $this->url->link('account/password', '', true)
 		);
-
-		$data['heading_title'] = $this->language->get('heading_title');
-
-		$data['text_password'] = $this->language->get('text_password');
-
-		$data['entry_password'] = $this->language->get('entry_password');
-		$data['entry_confirm'] = $this->language->get('entry_confirm');
-
-		$data['button_continue'] = $this->language->get('button_continue');
-		$data['button_back'] = $this->language->get('button_back');
 
 		if (isset($this->error['password'])) {
 			$data['error_password'] = $this->error['password'];
@@ -95,15 +75,11 @@ class ControllerAccountPassword extends Controller {
 		$data['footer'] = $this->load->controller('common/footer');
 		$data['header'] = $this->load->controller('common/header');
 
-		if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/account/password.tpl')) {
-			$this->response->setOutput($this->load->view($this->config->get('config_template') . '/template/account/password.tpl', $data));
-		} else {
-			$this->response->setOutput($this->load->view('default/template/account/password.tpl', $data));
-		}
+		$this->response->setOutput($this->load->view('account/password', $data));
 	}
 
 	protected function validate() {
-		if ((utf8_strlen($this->request->post['password']) < 4) || (utf8_strlen($this->request->post['password']) > 20)) {
+		if ((utf8_strlen(html_entity_decode($this->request->post['password'], ENT_QUOTES, 'UTF-8')) < 4) || (utf8_strlen(html_entity_decode($this->request->post['password'], ENT_QUOTES, 'UTF-8')) > 40)) {
 			$this->error['password'] = $this->language->get('error_password');
 		}
 

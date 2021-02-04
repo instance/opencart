@@ -30,18 +30,6 @@ class ControllerAccountDownload extends Controller {
 
 		$this->load->model('account/download');
 
-		$data['heading_title'] = $this->language->get('heading_title');
-
-		$data['text_empty'] = $this->language->get('text_empty');
-
-		$data['column_order_id'] = $this->language->get('column_order_id');
-		$data['column_name'] = $this->language->get('column_name');
-		$data['column_size'] = $this->language->get('column_size');
-		$data['column_date_added'] = $this->language->get('column_date_added');
-
-		$data['button_download'] = $this->language->get('button_download');
-		$data['button_continue'] = $this->language->get('button_continue');
-
 		if (isset($this->request->get['page'])) {
 			$page = $this->request->get['page'];
 		} else {
@@ -52,7 +40,7 @@ class ControllerAccountDownload extends Controller {
 
 		$download_total = $this->model_account_download->getTotalDownloads();
 
-		$results = $this->model_account_download->getDownloads(($page - 1) * $this->config->get('config_product_limit'), $this->config->get('config_product_limit'));
+		$results = $this->model_account_download->getDownloads(($page - 1) * $this->config->get('theme_' . $this->config->get('config_theme') . '_product_limit'), $this->config->get('theme_' . $this->config->get('config_theme') . '_product_limit'));
 
 		foreach ($results as $result) {
 			if (file_exists(DIR_DOWNLOAD . $result['filename'])) {
@@ -90,13 +78,13 @@ class ControllerAccountDownload extends Controller {
 		$pagination = new Pagination();
 		$pagination->total = $download_total;
 		$pagination->page = $page;
-		$pagination->limit = $this->config->get('config_product_limit');
+		$pagination->limit = $this->config->get('theme_' . $this->config->get('config_theme') . '_product_limit');
 		$pagination->url = $this->url->link('account/download', 'page={page}', true);
 
 		$data['pagination'] = $pagination->render();
 
-		$data['results'] = sprintf($this->language->get('text_pagination'), ($download_total) ? (($page - 1) * $this->config->get('config_product_limit')) + 1 : 0, ((($page - 1) * $this->config->get('config_product_limit')) > ($download_total - $this->config->get('config_product_limit'))) ? $download_total : ((($page - 1) * $this->config->get('config_product_limit')) + $this->config->get('config_product_limit')), $download_total, ceil($download_total / $this->config->get('config_product_limit')));
-
+		$data['results'] = sprintf($this->language->get('text_pagination'), ($download_total) ? (($page - 1) * 10) + 1 : 0, ((($page - 1) * 10) > ($download_total - 10)) ? $download_total : ((($page - 1) * 10) + 10), $download_total, ceil($download_total / 10));
+		
 		$data['continue'] = $this->url->link('account/account', '', true);
 
 		$data['column_left'] = $this->load->controller('common/column_left');
@@ -106,11 +94,7 @@ class ControllerAccountDownload extends Controller {
 		$data['footer'] = $this->load->controller('common/footer');
 		$data['header'] = $this->load->controller('common/header');
 
-		if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/account/download.tpl')) {
-			$this->response->setOutput($this->load->view($this->config->get('config_template') . '/template/account/download.tpl', $data));
-		} else {
-			$this->response->setOutput($this->load->view('default/template/account/download.tpl', $data));
-		}
+		$this->response->setOutput($this->load->view('account/download', $data));
 	}
 
 	public function download() {
